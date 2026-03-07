@@ -1,0 +1,134 @@
+/* styles.css */
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #111;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  overflow: hidden;
+}
+
+.titlebar {
+  height: 38px;
+  display: flex;
+  align-items: flex-end;
+  box-sizing: border-box;
+  -webkit-app-region: drag;
+  -webkit-user-select: none;
+  user-select: none;
+  background: #141414;
+  border-bottom: 1px solid #333;
+}
+
+/* Reserve room for macOS traffic lights */
+.traffic-gap {
+  width: 78px;
+  flex: 0 0 78px;
+  height: 100%;
+  /* so you can drag in the gap */
+}
+
+.tabs {
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+  -webkit-app-region: no-drag;
+  padding-right: 8px;
+  gap: 4px;
+}
+
+.tab {
+  height: 28px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  background: transparent;
+  color: #888;
+  cursor: pointer;
+  margin-bottom: -1px;
+  /* Overlap border */
+  font-size: 13px;
+  transition: background 0.1s;
+  position: relative;
+  /* important for flares */
+}
+
+.tab:hover {
+  background: #242424;
+}
+
+.tab:nth-child(1),
+.section:nth-of-type(1) {
+  --theme-color: #4b3e66;
+}
+
+.tab:nth-child(2),
+.section:nth-of-type(2) {
+  --theme-color: #274b69;
+}
+
+.tab:nth-child(3),
+.section:nth-of-type(3) {
+  --theme-color: #2e5941;
+}
+
+.tab.active {
+  background: var(--theme-color);
+  color: white;
+  border-color: #333;
+  border-bottom: 1px solid var(--theme-color);
+  /* hide titlebar border */
+}
+
+/* Inverted rounded bottom corners for active tab */
+.tab.active::before,
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  /* sit exactly over the titlebar bottom border */
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+  /* so flares don't block dragging */
+}
+
+.tab.active::before {
+  left: -13px;
+  border-bottom-right-radius: 8px;
+  border-right: 1px solid #333;
+  border-bottom: 1px solid #333;
+  box-shadow: 4px 4px 0 4px var(--theme-color);
+}
+
+.tab.active::after {
+  right: -13px;
+  border-bottom-left-radius: 8px;
+  border-left: 1px solid #333;
+  border-bottom: 1px solid #333;
+  box-shadow: -4px 4px 0 4px var(--theme-color);
+}
+
+.content {
+  height: calc(100% - 38px);
+  overflow: auto;
+  box-sizing: border-box;
+  background: #1e1e1e;
+}
+
+.section {
+  display: none;
+  padding: 24px;
+  min-height: 100%;
+  box-sizing: border-box;
+  background: linear-gradient(to bottom, var(--theme-color) 0%, #1e1e1e 160px);
+}
+
+.section.active {
+  display: block;
+}

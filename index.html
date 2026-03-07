@@ -1,0 +1,32 @@
+<!-- index.html -->
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+  <div class="titlebar">
+    <div class="traffic-gap"></div>
+
+    <div class="tabs">
+      <button class="tab active">Section 1</button>
+      <button class="tab">Section 2</button>
+      <button class="tab">Section 3</button>
+    </div>
+  </div>
+
+  <main class="content">
+    <div id="section-1" class="section active">Content for Section 1</div>
+    <div id="section-2" class="section">Content for Section 2</div>
+    <div id="section-3" class="section">Content for Section 3</div>
+  </main>
+
+  <script src="./renderer.js"></script>
+</body>
+
+</html>
