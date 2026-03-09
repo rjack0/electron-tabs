@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beyond Tensegrity</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a08;
+            --paper: #0f0f0b;
+            --gold: #c8a96e;
+            --rust: #b85c38;
+            --sage: #7a9e7e;
+            --bone: #e8e0d0;
+            --dim: #4a4840;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--bone);
+            font-family: 'DM Mono', monospace;
+            overflow-x: hidden;
+        }
+
+        header {
+            padding: 80px 60px 40px;
+            border-bottom: 1px solid var(--dim);
+        }
+
+        .header-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 4px;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(52px, 8vw, 110px);
+            line-height: 0.9;
+            letter-spacing: 2px;
+            color: var(--bone);
+        }
+
+        h1 em {
+            font-family: 'DM Serif Display', serif;
+            font-style: italic;
+            color: var(--gold);
+        }
+
+        .subtitle {
+            max-width: 540px;
+            margin-top: 28px;
+            font-size: 13px;
+            line-height: 1.8;
+            color: #9a9285;
+            font-weight: 300;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        @media (max-width: 800px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                padding: 50px 24px 30px;
+            }
+        }
+
+        .card {
+            border-right: 1px solid var(--dim);
+            border-bottom: 1px solid var(--dim);
+            padding: 48px 44px;
+            position: relative;
+            transition: background 0.4s;
+            cursor: default;
+            overflow: hidden;
+        }
+
+        .card:nth-child(even) {
+            border-right: none;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 30% 20%, var(--accent-glow, transparent) 0%, transparent 65%);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card:hover {
+            background: #131310;
+        }
+
+        .card-number {
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: var(--dim);
+            margin-bottom: 32px;
+            font-family: 'DM Mono', monospace;
+        }
+
+        .visual-block {
+            width: 100%;
+            height: 180px;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .card-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 36px;
+            letter-spacing: 2px;
+            color: var(--bone);
+            margin-bottom: 8px;
+        }
+
+        .card-domain {
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+
+        .card-body {
+            font-size: 13px;
+            line-height: 1.85;
+            color: #9a9285;
+            font-weight: 300;
+        }
+
+        .card-body strong {
+            color: var(--bone);
+            font-weight: 400;
+        }
+
+        .insight {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #252520;
+            font-size: 12px;
+            line-height: 1.7;
+            color: var(--gold);
+            font-style: italic;
+        }
+
+        /* SVG animations */
+        svg {
+            overflow: visible;
+        }
+
+        /* VORONOI */
+        .voro-cell {
+            transition: fill 0.3s;
+        }
+
+        .card:hover .voro-cell {
+            animation: voropulse 2s ease-in-out infinite;
+        }
+
+        @keyframes voropulse {
+
+            0%,
+            100% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* MINIMAL SURFACE */
+        .ms-line {
+            stroke-dasharray: 200;
+            stroke-dashoffset: 200;
+        }
+
+        .card:hover .ms-line {
+            animation: draw 1.5s ease forwards;
+        }
+
+        @keyframes draw {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        /* PHYLLOTAXIS */
+        .phyllo-dot {
+            transform-origin: 90px 90px;
+        }
+
+        .card:hover .phyllo-dot {
+            animation: spin 8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ANAMORPHOSIS */
+        .ana-line {
+            transform-origin: 90px 90px;
+        }
+
+        .card:hover .ana-line {
+            animation: skewpulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes skewpulse {
+            from {
+                transform: scaleX(1) scaleY(1);
+            }
+
+            to {
+                transform: scaleX(1.15) scaleY(0.7) skewX(5deg);
+            }
+        }
+
+        /* CATENARY */
+        .cat-path {
+            stroke-dasharray: 300;
+            stroke-dashoffset: 0;
+        }
+
+        .card:hover .cat-path {
+            animation: catdash 2s ease-in-out infinite;
+        }
+
+        @keyframes catdash {
+            0% {
+                stroke-dashoffset: 300;
+                opacity: 0;
+            }
+
+            40%,
+            60% {
+                opacity: 1;
+            }
+
+            100% {
+                stroke-dashoffset: -300;
+                opacity: 0;
+            }
+        }
+
+        /* BOID flocking */
+        .boid {
+            transition: all 0.3s;
+        }
+
+        /* REACTION DIFFUSION */
+        .rd-blob {
+            transform-origin: center;
+        }
+
+        .card:hover .rd-blob {
+            animation: rdpulse 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes rdpulse {
+            from {
+                r: 18;
+                opacity: 0.4;
+            }
+
+            to {
+                r: 28;
+                opacity: 0.9;
+            }
+        }
+
+        /* PARAMETRIC */
+        .param-path {
+            stroke-dasharray: 600;
+            stroke-dashoffset: 600;
+        }
+
+        .card:hover .param-path {
+            animation: paramdraw 2s ease forwards;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="header-label">Form · Force · Meaning</div>
+        <h1>Beyond<br><em>Tensegrity</em></h1>
+        <p class="subtitle">Concepts where theory does not explain beauty — theory <em>is</em> the beauty. Hover each to
+            animate the underlying principle.</p>
+    </header>
+
+    <div class="grid">
+
+        <!-- 1. MINIMAL SURFACES -->
+        <div class="card" style="--accent-glow: rgba(122,158,126,0.12)">
+            <div class="card-number">01 / 08</div>
+            <div class="visual-block">
+                <svg width="180" height="160" viewBox="0 0 180 160">
+                    <!-- Gyroid cross-section approximation -->
+                    <g fill="none">
+                        <path class="ms-line" d="M 10 80 C 40 20, 80 140, 90 80 C 100 20, 140 140, 170 80"
+                            stroke="#7a9e7e" stroke-width="1.5" />
+                        <path class="ms-line" d="M 10 60 C 40 10, 80 120, 90 60 C 100 10, 140 120, 170 60"
+                            stroke="#7a9e7e" stroke-width="0.8" opacity="0.5" style="animation-delay:0.2s" />
+                        <path class="ms-line" d="M 10 100 C 40 50, 80 160, 90 100 C 100 50, 140 160, 170 100"
+                            stroke="#7a9e7e" stroke-width="0.8" opacity="0.5" style="animation-delay:0.4s" />
+                        <!-- saddle surface grid -->
+                        <path class="ms-line" d="M 30 20 Q 90 90 150 20" stroke="#c8a96e" stroke-width="1" opacity="0.6"
+                            style="animation-delay:0.6s" />
+                        <path class="ms-line" d="M 30 140 Q 90 70 150 140" stroke="#c8a96e" stroke-width="1"
+                            opacity="0.6" style="animation-delay:0.8s" />
+                        <path class="ms-line" d="M 30 20 Q 30 80 30 140" stroke="#c8a96e" stroke-width="0.5"
+                            opacity="0.3" style="animation-delay:1s" />
+                        <path class="ms-line" d="M 90 60 Q 90 90 90 120" stroke="#c8a96e" stroke-width="0.5"
+                            opacity="0.3" style="animation-delay:1.1s" />
+                        <path class="ms-line" d="M 150 20 Q 150 80 150 140" stroke="#c8a96e" stroke-width="0.5"
+                            opacity="0.3" style="animation-delay:1.2s" />
+                    </g>
+                    <circle cx="90" cy="80" r="3" fill="#7a9e7e" opacity="0.8" />
+                    <circle cx="30" cy="80" r="2" fill="#c8a96e" opacity="0.6" />
+                    <circle cx="150" cy="80" r="2" fill="#c8a96e" opacity="0.6" />
+                </svg>
+            </div>
+            <div class="card-title">Minimal Surfaces</div>
+            <div class="card-domain">Mathematics · Nature · Furniture · Architecture</div>
+            <div class="card-body">
+                A surface whose <strong>mean curvature is zero at every point</strong> — it curves inward as much as it
+                curves outward, perfectly balanced. Soap films always form them naturally. The Gyroid (found in
+                butterfly wings and block copolymers) is a minimal surface with <strong>no straight lines and no mirror
+                    symmetry</strong>, yet it tiles all of space.
+                <div class="insight">→ You see: a saddle that flows forever without folding back. You learn: nature is a
+                    calculus problem solving for minimum area under constraint.</div>
+            </div>
+        </div>
+
+        <!-- 2. PHYLLOTAXIS -->
+        <div class="card" style="--accent-glow: rgba(200,169,110,0.1)">
+            <div class="card-number">02 / 08</div>
+            <div class="visual-block">
+                <svg width="180" height="180" viewBox="0 0 180 180" id="phylloSvg">
+                    <g class="phyllo-dot">
+                        <script>
+                        </script>
+                    </g>
+                    <!-- pre-rendered phyllotaxis dots at golden angle -->
+                    <g id="phyllo">
+                    </g>
+                </svg>
+                <canvas id="phylloCanvas" width="180" height="180" style="position:absolute;top:0;left:0;"></canvas>
+            </div>
+            <div class="card-title">Phyllotaxis</div>
+            <div class="card-domain">Botany · Art · Tiling · Optimization</div>
+            <div class="card-body">
+                The arrangement of seeds in a sunflower, scales on a pinecone, petals on a rose. Each element placed at
+                <strong>137.5° — the golden angle</strong> — from the last. The result: perfect packing with <strong>no
+                    wasted space</strong>, and the number of visible spirals is always a Fibonacci number. No plant
+                "knows" Fibonacci. It emerges from one rule, repeated.
+                <div class="insight">→ You see: mesmerizing spiral lattice. You learn: irrational numbers are nature's
+                    anti-collision algorithm.</div>
+            </div>
+        </div>
+
+        <!-- 3. CATENARY -->
+        <div class="card" style="--accent-glow: rgba(184,92,56,0.1)">
+            <div class="card-number">03 / 08</div>
+            <div class="visual-block">
+                <svg width="180" height="160" viewBox="0 0 180 160">
+                    <!-- inverted catenary arch -->
+                    <path class="cat-path" d="M 20 20 Q 90 150 160 20" fill="none" stroke="#b85c38" stroke-width="2" />
+                    <path class="cat-path" d="M 40 20 Q 90 130 140 20" fill="none" stroke="#b85c38" stroke-width="1"
+                        opacity="0.5" style="animation-delay:0.3s" />
+                    <path class="cat-path" d="M 60 20 Q 90 110 120 20" fill="none" stroke="#b85c38" stroke-width="0.7"
+                        opacity="0.3" style="animation-delay:0.6s" />
+                    <!-- hanging chain -->
+                    <path class="cat-path" d="M 20 140 Q 90 10 160 140" fill="none" stroke="#c8a96e" stroke-width="1.5"
+                        stroke-dasharray="300" stroke-dashoffset="300" style="animation-delay:0.9s" />
+                    <circle cx="20" cy="140" r="4" fill="#c8a96e" />
+                    <circle cx="160" cy="140" r="4" fill="#c8a96e" />
+                    <line x1="20" y1="20" x2="20" y2="140" stroke="#4a4840" stroke-width="1" stroke-dasharray="4" />
+                    <line x1="160" y1="20" x2="160" y2="140" stroke="#4a4840" stroke-width="1" stroke-dasharray="4" />
+                    <text x="90" y="155" text-anchor="middle" fill="#4a4840" font-size="9" font-family="DM Mono">y =
+                        a·cosh(x/a)</text>
+                </svg>
+            </div>
+            <div class="card-title">Catenary</div>
+            <div class="card-domain">Physics · Architecture · Sculpture · Chainwork</div>
+            <div class="card-body">
+                Hang a chain between two points: it forms a catenary — not a parabola (common mistake). <strong>Flip it
+                    upside down, it becomes the ideal arch</strong>: every point in pure compression, zero bending
+                stress. Gaudí built the Sagrada Família using hanging chain models. The geometry of a chain under
+                gravity is the geometry of a vault under load — <strong>physics and beauty are the same
+                    equation</strong>.
+                <div class="insight">→ You see: an arch of impossible elegance. You learn: the shape that hangs is the
+                    shape that stands.</div>
+            </div>
+        </div>
+
+        <!-- 4. VORONOI -->
+        <div class="card" style="--accent-glow: rgba(122,158,126,0.08)">
+            <div class="card-number">04 / 08</div>
+            <div class="visual-block">
+                <svg width="180" height="160" viewBox="0 0 180 160">
+                    <!-- Voronoi-like cells, hand-drawn -->
+                    <polygon class="voro-cell" points="0,0 60,0 45,35 20,50 0,40" fill="none" stroke="#7a9e7e"
+                        stroke-width="1" style="animation-delay:0s" />
+                    <polygon class="voro-cell" points="60,0 110,0 100,45 45,35" fill="none" stroke="#7a9e7e"
+                        stroke-width="1" style="animation-delay:0.15s" />
+                    <polygon class="voro-cell" points="110,0 180,0 180,55 130,60 100,45" fill="none" stroke="#7a9e7e"
+                        stroke-width="1" style="animation-delay:0.3s" />
+                    <polygon class="voro-cell" points="0,40 20,50 30,90 10,110 0,90" fill="none" stroke="#7a9e7e"
+                        stroke-width="1" style="animation-delay:0.45s" />
+                    <polygon class="voro-cell" points="20,50 45,35 100,45 85,95 50,100 30,90" fill="none"
+                        stroke="#c8a96e" stroke-width="1.5" style="animation-delay:0.6s" />
+                    <polygon class="voro-cell" points="100,45 130,60 140,100 85,95" fill="none" stroke="#7a9e7e"
+                        stroke-width="1" style="animation-delay:0.75s" />
+                    <polygon class="voro-cell" points="130,60 180,55 180,120 140,100" fill="none" stroke="#7a9e7e"
+                        stroke-width="1" style="animation-delay:0.9s" />
+                    <polygon class="voro-cell" points="0,90 10,110 20,160 0,160" fill="none" stroke="#7a9e7e"
+                        stroke-width="1" style="animation-delay:1.05s" />
+                    <polygon class="voro-cell" points="10,110 30,90 50,100 60,140 20,160" fill="none" stroke="#7a9e7e"
+                        stroke-width="1" style="animation-delay:1.2s" />
+                    <polygon class="voro-cell" points="50,100 85,95 100,140 60,140" fill="none" stroke="#7a9e7e"
+                        stroke-width="1" style="animation-delay:1.35s" />
+                    <polygon class="voro-cell" points="85,95 140,100 150,160 100,140" fill="none" stroke="#7a9e7e"
+                        stroke-width="1" style="animation-delay:1.5s" />
+                    <polygon class="voro-cell" points="140,100 180,120 180,160 150,160" fill="none" stroke="#7a9e7e"
+                        stroke-width="1" style="animation-delay:1.65s" />
+                    <!-- seed points -->
+                    <circle cx="40" cy="25" r="2" fill="#c8a96e" opacity="0.7" />
+                    <circle cx="90" cy="22" r="2" fill="#c8a96e" opacity="0.7" />
+                    <circle cx="145" cy="30" r="2" fill="#c8a96e" opacity="0.7" />
+                    <circle cx="12" cy="65" r="2" fill="#c8a96e" opacity="0.7" />
+                    <circle cx="62" cy="70" r="2.5" fill="#c8a96e" />
+                    <circle cx="118" cy="72" r="2" fill="#c8a96e" opacity="0.7" />
+                    <circle cx="158" cy="88" r="2" fill="#c8a96e" opacity="0.7" />
+                    <circle cx="30" cy="125" r="2" fill="#c8a96e" opacity="0.7" />
+                    <circle cx="78" cy="120" r="2" fill="#c8a96e" opacity="0.7" />
+                    <circle cx="120" cy="130" r="2" fill="#c8a96e" opacity="0.7" />
+                    <circle cx="165" cy="140" r="2" fill="#c8a96e" opacity="0.7" />
+                </svg>
+            </div>
+            <div class="card-title">Voronoi Diagrams</div>
+            <div class="card-domain">Geometry · Biology · Urban Planning · Materials</div>
+            <div class="card-body">
+                Scatter points. Each cell is <strong>all space closer to its seed than any other</strong>. The result is
+                giraffe skin, dragonfly wings, cracked mud, the distribution of stars in a galaxy cluster, and efficient
+                cell tower placement. It's the geometry of <strong>territorial domination</strong> — every organism,
+                every signal, every city does this. The math and the biology are one thing.
+                <div class="insight">→ You see: organic tessellation that looks hand-designed. You learn: proximity +
+                    competition = pattern, always.</div>
+            </div>
+        </div>
+
+        <!-- 5. REACTION DIFFUSION -->
+        <div class="card" style="--accent-glow: rgba(184,92,56,0.1)">
+            <div class="card-number">05 / 08</div>
+            <div class="visual-block">
+                <svg width="180" height="160" viewBox="0 0 180 160">
+                    <!-- Turing pattern stripes/spots approximation -->
+                    <!-- Spots cluster -->
+                    <circle class="rd-blob" cx="50" cy="45" r="20" fill="none" stroke="#b85c38" stroke-width="1.5" />
+                    <circle class="rd-blob" cx="50" cy="45" r="10" fill="#b85c38" opacity="0.3"
+                        style="animation-delay:0.3s" />
+                    <circle class="rd-blob" cx="90" cy="80" r="22" fill="none" stroke="#b85c38" stroke-width="1.5"
+                        style="animation-delay:0.6s" />
+                    <circle class="rd-blob" cx="90" cy="80" r="12" fill="#b85c38" opacity="0.3"
+                        style="animation-delay:0.9s" />
+                    <circle class="rd-blob" cx="130" cy="45" r="18" fill="none" stroke="#b85c38" stroke-width="1.5"
+                        style="animation-delay:0.2s" />
+                    <circle class="rd-blob" cx="130" cy="45" r="9" fill="#b85c38" opacity="0.3"
+                        style="animation-delay:0.5s" />
+                    <circle class="rd-blob" cx="40" cy="120" r="16" fill="none" stroke="#b85c38" stroke-width="1.5"
+                        style="animation-delay:0.8s" />
+                    <circle class="rd-blob" cx="40" cy="120" r="8" fill="#b85c38" opacity="0.25"
+                        style="animation-delay:1.1s" />
+                    <circle class="rd-blob" cx="110" cy="125" r="19" fill="none" stroke="#b85c38" stroke-width="1.5"
+                        style="animation-delay:0.4s" />
+                    <circle class="rd-blob" cx="110" cy="125" r="10" fill="#b85c38" opacity="0.25"
+                        style="animation-delay:0.7s" />
+                    <circle class="rd-blob" cx="155" cy="110" r="14" fill="none" stroke="#b85c38" stroke-width="1"
+                        style="animation-delay:0.1s" />
+                    <!-- connecting tension lines -->
+                    <line x1="50" y1="45" x2="90" y2="80" stroke="#4a4840" stroke-width="0.5" />
+                    <line x1="130" y1="45" x2="90" y2="80" stroke="#4a4840" stroke-width="0.5" />
+                    <line x1="90" y1="80" x2="110" y2="125" stroke="#4a4840" stroke-width="0.5" />
+                    <line x1="40" y1="120" x2="90" y2="80" stroke="#4a4840" stroke-width="0.5" />
+                </svg>
+            </div>
+            <div class="card-title">Reaction-Diffusion</div>
+            <div class="card-domain">Biology · Chemistry · Pattern · Art</div>
+            <div class="card-body">
+                Two chemicals: an <strong>activator</strong> (spreads slowly, activates itself) and an
+                <strong>inhibitor</strong> (spreads fast, suppresses the activator). From those two rules: leopard
+                spots, zebrafish stripes, fingerprints, and the branching of coral. Alan Turing described this in 1952 —
+                <strong>the same mathematician who broke Enigma</strong> showed that all animal coat patterns are one
+                equation, parameterized.
+                <div class="insight">→ You see: every exotic animal coat. You learn: all pattern is the residue of local
+                    competition at different speeds.</div>
+            </div>
+        </div>
+
+        <!-- 6. ANAMORPHOSIS -->
+        <div class="card" style="--accent-glow: rgba(200,169,110,0.1)">
+            <div class="card-number">06 / 08</div>
+            <div class="visual-block">
+                <svg width="180" height="160" viewBox="0 0 180 160">
+                    <defs>
+                        <linearGradient id="agrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#c8a96e;stop-opacity:0.3" />
+                            <stop offset="100%" style="stop-color:#c8a96e;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <!-- distorted skull grid lines -->
+                    <g class="ana-line">
+                        <!-- Wide distorted shape on left -->
+                        <ellipse cx="55" cy="80" rx="48" ry="35" fill="none" stroke="url(#agrad)" stroke-width="1.5" />
+                        <ellipse cx="55" cy="80" rx="28" ry="20" fill="none" stroke="#c8a96e" stroke-width="0.8"
+                            opacity="0.5" />
+                        <!-- Eye sockets distorted -->
+                        <ellipse cx="38" cy="70" rx="12" ry="8" fill="none" stroke="#c8a96e" stroke-width="1" />
+                        <ellipse cx="68" cy="70" rx="12" ry="8" fill="none" stroke="#c8a96e" stroke-width="1" />
+                        <!-- Jaw line -->
+                        <path d="M 20 90 Q 55 115 90 90" fill="none" stroke="#c8a96e" stroke-width="1" />
+                        <!-- Grid perspective lines converging right -->
+                        <line x1="20" y1="45" x2="155" y2="72" stroke="#4a4840" stroke-width="0.5" />
+                        <line x1="20" y1="60" x2="155" y2="78" stroke="#4a4840" stroke-width="0.5" />
+                        <line x1="20" y1="80" x2="155" y2="80" stroke="#4a4840" stroke-width="0.5" />
+                        <line x1="20" y1="100" x2="155" y2="82" stroke="#4a4840" stroke-width="0.5" />
+                        <line x1="20" y1="115" x2="155" y2="88" stroke="#4a4840" stroke-width="0.5" />
+                    </g>
+                    <!-- Mirror/eye point on right -->
+                    <circle cx="158" cy="80" r="5" fill="#c8a96e" opacity="0.8" />
+                    <circle cx="158" cy="80" r="10" fill="none" stroke="#c8a96e" stroke-width="0.5" opacity="0.4" />
+                    <text x="158" y="100" text-anchor="middle" fill="#c8a96e" font-size="8" font-family="DM Mono"
+                        opacity="0.5">eye</text>
+                </svg>
+            </div>
+            <div class="card-title">Anamorphosis</div>
+            <div class="card-domain">Painting · Sculpture · Illusion · Mathematics</div>
+            <div class="card-body">
+                An image deliberately distorted so it <strong>only resolves correctly from one specific angle</strong>
+                or via a curved mirror. Holbein's <em>The Ambassadors</em> (1533) contains a skull stretched across the
+                floor that snaps into legibility when you crouch at the side. It encodes the <strong>mathematics of
+                    perspective projection in reverse</strong> — what you see is wrong, what you infer is the work of
+                art.
+                <div class="insight">→ You see: chaos, then sudden revelation. You learn: all perspective is a
+                    coordinate transformation; anamorphosis makes the math visible.</div>
+            </div>
+        </div>
+
+        <!-- 7. FRACTALS / SELF-SIMILARITY -->
+        <div class="card" style="--accent-glow: rgba(122,158,126,0.1)">
+            <div class="card-number">07 / 08</div>
+            <div class="visual-block">
+                <svg width="180" height="160" viewBox="0 0 180 160">
+                    <!-- Koch snowflake-like fractal partial -->
+                    <g fill="none" stroke="#7a9e7e" stroke-linejoin="round">
+                        <!-- Level 0 triangle -->
+                        <polygon points="90,10 170,148 10,148" stroke-width="0.5" opacity="0.2" />
+                        <!-- Level 1 -->
+                        <polyline points="10,148 50,79 90,10 130,79 170,148" stroke-width="0.7" opacity="0.4" />
+                        <!-- Recursive bumps added -->
+                        <polyline
+                            points="10,148 30,113.5 50,79 30,79 50,79 70,113.5 90,148 70,113.5 90,148 110,113.5 130,148 110,113.5 130,79 150,79 130,79 150,113.5 170,148"
+                            stroke-width="1" opacity="0.6" />
+                        <!-- Inner smaller triangle -->
+                        <polygon points="90,50 130,118 50,118" stroke="#c8a96e" stroke-width="1" opacity="0.7" />
+                        <polygon points="90,70 110,104 70,104" stroke="#c8a96e" stroke-width="0.8" opacity="0.5" />
+                        <polygon points="90,82 100,98 80,98" stroke="#c8a96e" stroke-width="0.6" opacity="0.3" />
+                    </g>
+                    <text x="90" y="157" text-anchor="middle" fill="#4a4840" font-size="8" font-family="DM Mono">D ≈
+                        1.26</text>
+                </svg>
+            </div>
+            <div class="card-title">Fractal Dimension</div>
+            <div class="card-domain">Mathematics · Nature · Finance · Coastlines</div>
+            <div class="card-body">
+                A coastline is <strong>neither 1D nor 2D — it has a fractional dimension of ~1.2</strong>. A cauliflower
+                head is closer to 2.7. Fractal dimension measures how completely a form fills space as you zoom. This is
+                why a fern has the same statistical structure at every scale, why <strong>Jackson Pollock's drip
+                    paintings are measurably fractal</strong> (D≈1.7), and why lung surface area can be enormous inside
+                a small chest cavity.
+                <div class="insight">→ You see: infinite complexity from finite rules. You learn: dimension is not
+                    always a whole number, and roughness is quantifiable.</div>
+            </div>
+        </div>
+
+        <!-- 8. BOIDS / EMERGENCE -->
+        <div class="card" style="--accent-glow: rgba(184,92,56,0.08)">
+            <div class="card-number">08 / 08</div>
+            <div class="visual-block">
+                <canvas id="boidCanvas" width="180" height="160" style="display:block;"></canvas>
+            </div>
+            <div class="card-title">Emergence & Flocking</div>
+            <div class="card-domain">Biology · Programming · Sociology · Robotics</div>
+            <div class="card-body">
+                Three rules: <strong>separation</strong> (don't crowd neighbors), <strong>alignment</strong> (steer
+                toward average heading), <strong>cohesion</strong> (steer toward average position). From those three
+                rules: murmurations of starlings, schools of fish, traffic jams, market crashes, and stampedes.
+                <strong>No bird knows the shape of the flock</strong>. The shape exists at a higher level than any
+                individual — it's real, but it lives nowhere.
+                <div class="insight">→ You see: choreography without a choreographer. You learn: complexity is often a
+                    property of rules, not of parts.</div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer
+        style="padding:40px 60px; border-top:1px solid var(--dim); display:flex; justify-content:space-between; align-items:center; color: var(--dim); font-size:11px; letter-spacing:2px;">
+        <span>FORM · FORCE · MEANING</span>
+        <span>ALL ANIMATIONS DEMONSTRATE THE UNDERLYING PRINCIPLE</span>
+    </footer>
+
+    <script>
+        // Phyllotaxis canvas
+        (function () {
+            const canvas = document.getElementById('phylloCanvas');
+            const ctx = canvas.getContext('2d');
+            const W = 180, H = 180;
+            const cx = W / 2, cy = H / 2;
+            const golden = 137.50776405003785 * Math.PI / 180;
+            let frame = 0;
+
+            function draw() {
+                ctx.clearRect(0, 0, W, H);
+                const n = 200;
+                for (let i = 1; i <= n; i++) {
+                    const r = Math.sqrt(i) * 7.2;
+                    if (r > 84) continue;
+                    const theta = i * golden + frame * 0.002;
+                    const x = cx + r * Math.cos(theta);
+                    const y = cy + r * Math.sin(theta);
+                    const t = i / n;
+                    const size = 1.2 + t * 2;
+                    ctx.beginPath();
+                    ctx.arc(x, y, size, 0, Math.PI * 2);
+                    // Color: inner gold, outer sage
+                    const r2 = Math.floor(200 - t * 78);
+                    const g2 = Math.floor(169 - t * 15 + t * 40);
+                    const b2 = Math.floor(110 + t * 16);
+                    ctx.fillStyle = `rgba(${r2},${g2},${b2},${0.5 + t * 0.5})`;
+                    ctx.fill();
+                }
+                frame++;
+                requestAnimationFrame(draw);
+            }
+            draw();
+        })();
+
+        // Boids canvas
+        (function () {
+            const canvas = document.getElementById('boidCanvas');
+            const ctx = canvas.getContext('2d');
+            const W = 180, H = 160;
+
+            const N = 28;
+            const boids = Array.from({ length: N }, () => ({
+                x: Math.random() * W,
+                y: Math.random() * H,
+                vx: (Math.random() - 0.5) * 2,
+                vy: (Math.random() - 0.5) * 2,
+            }));
+
+            const VISUAL = 32, AVOID = 12, MAX_SPEED = 1.8, MAX_FORCE = 0.04;
+
+            function limit(v, max) {
+                const len = Math.sqrt(v.x * v.x + v.y * v.y);
+                if (len > max) { v.x = v.x / len * max; v.y = v.y / len * max; }
+            }
+
+            function update() {
+                for (const b of boids) {
+                    let sepX = 0, sepY = 0, sepN = 0;
+                    let aliVX = 0, aliVY = 0, aliN = 0;
+                    let cohX = 0, cohY = 0, cohN = 0;
+
+                    for (const o of boids) {
+                        if (o === b) continue;
+                        const dx = o.x - b.x, dy = o.y - b.y;
+                        const d = Math.sqrt(dx * dx + dy * dy);
+                        if (d < VISUAL) {
+                            if (d < AVOID && d > 0) { sepX -= dx / d; sepY -= dy / d; sepN++; }
+                            aliVX += o.vx; aliVY += o.vy; aliN++;
+                            cohX += o.x; cohY += o.y; cohN++;
+                        }
+                    }
+                    let steerX = 0, steerY = 0;
+                    if (sepN > 0) { steerX += (sepX / sepN) * 1.4; steerY += (sepY / sepN) * 1.4; }
+                    if (aliN > 0) { steerX += (aliVX / aliN - b.vx) * 0.08; steerY += (aliVY / aliN - b.vy) * 0.08; }
+                    if (cohN > 0) { steerX += (cohX / cohN - b.x) * 0.003; steerY += (cohY / cohN - b.y) * 0.003; }
+
+                    b.vx += steerX * MAX_FORCE * 10;
+                    b.vy += steerY * MAX_FORCE * 10;
+                    limit({ x: b.vx, y: b.vy }, MAX_SPEED);
+
+                    const v = { x: b.vx, y: b.vy };
+                    limit(v, MAX_SPEED);
+                    b.vx = v.x; b.vy = v.y;
+
+                    b.x += b.vx; b.y += b.vy;
+                    if (b.x < 0) b.x = W; if (b.x > W) b.x = 0;
+                    if (b.y < 0) b.y = H; if (b.y > H) b.y = 0;
+                }
+            }
+
+            function draw() {
+                ctx.fillStyle = 'rgba(10,10,8,0.25)';
+                ctx.fillRect(0, 0, W, H);
+                ctx.strokeStyle = '#b85c38';
+                ctx.fillStyle = '#c8a96e';
+                for (const b of boids) {
+                    const angle = Math.atan2(b.vy, b.vx);
+                    ctx.save();
+                    ctx.translate(b.x, b.y);
+                    ctx.rotate(angle);
+                    ctx.beginPath();
+                    ctx.moveTo(5, 0);
+                    ctx.lineTo(-3, 2.5);
+                    ctx.lineTo(-3, -2.5);
+                    ctx.closePath();
+                    ctx.fillStyle = '#c8a96e';
+                    ctx.globalAlpha = 0.75;
+                    ctx.fill();
+                    ctx.restore();
+                }
+                update();
+                requestAnimationFrame(draw);
+            }
+            draw();
+        })();
+    </script>
+</body>
+
+</html>

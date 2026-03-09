@@ -1,29 +1,52 @@
-<!-- index.html -->
 <!doctype html>
 <html>
 
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'" />
+  <!-- Security completely bypassed to allow all external CDNs and fonts -->
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css" />
+  <script>
+    // Electron UMD workaround: Prevent React/Babel from picking up Node's module system
+    window.nodeRequire = window.require;
+    window.nodeExports = window.exports;
+    window.nodeModule = window.module;
+    delete window.require;
+    delete window.exports;
+    delete window.module;
+  </script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script>
+    // Restore Node context for our renderer script
+    window.require = window.nodeRequire;
+    window.exports = window.nodeExports;
+    window.module = window.nodeModule;
+  </script>
 </head>
 
 <body>
   <div class="titlebar">
     <div class="traffic-gap"></div>
 
-    <div class="tabs">
-      <button class="tab active">Section 1</button>
-      <button class="tab">Section 2</button>
-      <button class="tab">Section 3</button>
+    <div class="tabs" id="tab-list">
+      <!-- Dynamic tabs injected here -->
     </div>
+
+    <button class="tab-add" id="btn-add-tab" title="New Sandbox Tab">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+    </button>
+
   </div>
 
-  <main class="content">
-    <div id="section-1" class="section active">Content for Section 1</div>
-    <div id="section-2" class="section">Content for Section 2</div>
-    <div id="section-3" class="section">Content for Section 3</div>
+  <main class="content" id="content-area">
+    <!-- Dynamic Absolute Sections injected here -->
   </main>
 
   <script src="./renderer.js"></script>

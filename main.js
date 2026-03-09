@@ -1,23 +1,27 @@
 // main.js
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
 
 function createWindow() {
   const win = new BrowserWindow({
     width: 1280,
     height: 840,
-    titleBarStyle: 'hidden', // try 'hiddenInset' if you want the lights slightly more inward
+    titleBarStyle: 'hidden',
     titleBarOverlay: {
-      height: 32
+      height: 38,
+      color: '#111111',
+      symbolColor: '#ffffff'
     },
     backgroundColor: '#111111',
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: true
+      nodeIntegration: true,
+      contextIsolation: false,
+      webSecurity: false // Bypassing all security constraints per request
     }
   })
 
   win.loadFile('index.html')
+  win.webContents.openDevTools()
 }
 
 app.whenReady().then(createWindow)

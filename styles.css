@@ -1,16 +1,42 @@
-/* styles.css */
+:root {
+  /* Volumetric Void Variables */
+  --bg-void: #030305;
+  --bg-glass-panel: rgba(14, 14, 18, 0.65);
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --border-neon: rgba(255, 255, 255, 0.2);
+  --text-main: #f8fafc;
+  --text-dim: #718096;
+  --theme-color: #00e5ff;
+  /* Default liquid cyan */
+}
+
+/* Base Body - The deep cinematic void */
 html,
 body {
   margin: 0;
   height: 100%;
-  background: #111;
-  color: white;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-void);
+  color: var(--text-main);
+  font-family: 'Outfit', -apple-system, sans-serif;
+  overflow: hidden;
+  position: relative;
 }
 
-body {
-  overflow: hidden;
+/* Global Noise Texture */
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 99999;
+  opacity: 0.035;
+  background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
 }
+
+/* ----- TITLEBAR & TABS ----- */
 
 .titlebar {
   height: 38px;
@@ -20,16 +46,16 @@ body {
   -webkit-app-region: drag;
   -webkit-user-select: none;
   user-select: none;
-  background: #141414;
-  border-bottom: 1px solid #333;
+  background: transparent;
+  position: relative;
+  z-index: 100;
+  padding-bottom: 0px;
 }
 
-/* Reserve room for macOS traffic lights */
 .traffic-gap {
-  width: 78px;
-  flex: 0 0 78px;
+  width: 90px;
+  flex: 0 0 90px;
   height: 100%;
-  /* so you can drag in the gap */
 }
 
 .tabs {
@@ -37,98 +63,394 @@ body {
   align-items: flex-end;
   height: 100%;
   -webkit-app-region: no-drag;
-  padding-right: 8px;
-  gap: 4px;
 }
 
+/* Standard Inactive Tab - Dark, elegant */
 .tab {
-  height: 28px;
-  padding: 0 16px;
-  border: 1px solid transparent;
+  height: 32px;
+  padding: 0 20px;
+  border-radius: 12px 12px 0 0;
+  background-color: var(--bg-void);
+  border: 1px solid rgba(255, 255, 255, 0.04);
   border-bottom: none;
-  border-radius: 8px 8px 0 0;
-  background: transparent;
-  color: #888;
+  color: var(--text-dim);
   cursor: pointer;
-  margin-bottom: -1px;
-  /* Overlap border */
+  font-family: 'Clash Display', sans-serif;
   font-size: 13px;
-  transition: background 0.1s;
+  font-weight: 500;
+  letter-spacing: 0.5px;
   position: relative;
-  /* important for flares */
+  display: flex;
+  align-items: center;
+  margin-left: -4px;
+  z-index: 1;
+  /* Pure Z-index stack logic active in JS */
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tab:first-child {
+  margin-left: 0;
 }
 
 .tab:hover {
-  background: #242424;
+  background-color: rgba(255, 255, 255, 0.04);
+  color: #fff;
 }
 
-.tab:nth-child(1),
-.section:nth-of-type(1) {
-  --theme-color: #4b3e66;
-}
-
-.tab:nth-child(2),
-.section:nth-of-type(2) {
-  --theme-color: #274b69;
-}
-
-.tab:nth-child(3),
-.section:nth-of-type(3) {
-  --theme-color: #2e5941;
-}
-
+/* ACTIVE TAB */
 .tab.active {
-  background: var(--theme-color);
-  color: white;
-  border-color: #333;
-  border-bottom: 1px solid var(--theme-color);
-  /* hide titlebar border */
+  background-color: var(--theme-color);
+  color: #000;
+  /* High contrast against neon without shifting layout width */
+  text-shadow: 0 0 .5px currentColor;
+  border-color: transparent;
+  /* Remove the shadow behind the tab completely as requested.
+     Keep only a subtle interior light. */
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4);
 }
 
-/* Inverted rounded bottom corners for active tab */
-.tab.active::before,
-.tab.active::after {
-  content: '';
+/*
+  VOLUMETRIC TRACE ARCHITECTURE (ULTRA-VERBOSITY CSS)
+  Using pure absolute positioning and CSS radial math. No SVGs. No layout extrusion.
+*/
+.swoop-container {
   position: absolute;
-  bottom: -1px;
-  /* sit exactly over the titlebar bottom border */
-  width: 12px;
-  height: 12px;
+  bottom: 0;
+  width: 16px;
+  height: 16px;
   pointer-events: none;
-  /* so flares don't block dragging */
+  z-index: 1;
 }
 
-.tab.active::before {
-  left: -13px;
-  border-bottom-right-radius: 8px;
-  border-right: 1px solid #333;
-  border-bottom: 1px solid #333;
-  box-shadow: 4px 4px 0 4px var(--theme-color);
+.swoop-container.left {
+  left: -16px;
 }
 
-.tab.active::after {
-  right: -13px;
-  border-bottom-left-radius: 8px;
-  border-left: 1px solid #333;
-  border-bottom: 1px solid #333;
-  box-shadow: -4px 4px 0 4px var(--theme-color);
+.swoop-container.right {
+  right: -16px;
 }
+
+/* The Solid Fill for the Curve - Always present for perfectly emergent shadows */
+.swoop-solid {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  /* Inactive: matches the background exactly, physically hiding it without opacity */
+  color: var(--bg-void);
+  opacity: 1;
+  /* Shadow starts physically non-existent at 0px radius */
+  filter: drop-shadow(0px 0px 0px currentColor);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.swoop-container.left .swoop-solid {
+  background: radial-gradient(circle at top left, transparent 16px, currentColor 16.5px);
+}
+
+.swoop-container.right .swoop-solid {
+  background: radial-gradient(circle at top right, transparent 16px, currentColor 16.5px);
+}
+
+/* When active, transition color smoothly and physically bloom the shadow */
+.tab.active .swoop-solid {
+  color: var(--theme-color);
+  /* Symmetrical, tight bloom that physically grows outward */
+  filter: drop-shadow(0px 2px 5px currentColor);
+}
+
+/* Add Tab Button */
+.tab-add {
+  height: 32px;
+  width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-dim);
+  cursor: pointer;
+  margin-left: 12px;
+  margin-bottom: 4px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-app-region: no-drag;
+}
+
+.tab-add:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transform: scale(1.05);
+}
+
+/* ----- CONTENT & OPTICAL BLEND ----- */
 
 .content {
   height: calc(100% - 38px);
-  overflow: auto;
+  position: relative;
   box-sizing: border-box;
-  background: #1e1e1e;
 }
 
+/* The Optical Blend Matrix - Animates smoothly via CSS transitions */
+#content-blend {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0px;
+  background: linear-gradient(to bottom, var(--theme-color) 0%, var(--theme-color) 4px, rgba(3, 3, 5, 0) 100%);
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#content-blend.active {
+  height: 24px;
+  opacity: 1;
+}
+
+/* Section Matrix */
 .section {
-  display: none;
-  padding: 24px;
-  min-height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
   box-sizing: border-box;
-  background: linear-gradient(to bottom, var(--theme-color) 0%, #1e1e1e 160px);
+  background: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--theme-color) 15%, transparent), var(--bg-void) 80%);
+  overflow: auto;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .section.active {
-  display: block;
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 10;
+}
+
+.section iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+}
+
+/* ----- HYPER-TACTILE SETUP UI ----- */
+
+.setup-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  padding: 40px;
+  box-sizing: border-box;
+  animation: floatIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes floatIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.setup-form {
+  background: var(--bg-glass-panel);
+  backdrop-filter: blur(40px) saturate(150%);
+  -webkit-backdrop-filter: blur(40px) saturate(150%);
+  border: 1px solid var(--border-glass);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  /* Optical light edge */
+  border-radius: 24px;
+  padding: 48px;
+  width: 100%;
+  max-width: 680px;
+  box-shadow:
+    0 32px 64px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glow orb inside the form */
+.setup-form::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 300px;
+  height: 300px;
+  background: var(--theme-color);
+  filter: blur(100px);
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+.setup-form h2 {
+  margin: 0 0 12px 0;
+  font-family: 'Clash Display', sans-serif;
+  font-size: 32px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  opacity: 0;
+  animation: staggerFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.form-group:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.form-group:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.form-group:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+.form-group:nth-child(5) {
+  animation-delay: 0.4s;
+}
+
+@keyframes staggerFade {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.form-group label {
+  font-size: 10px;
+  color: var(--theme-color);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.setup-form input[type="text"],
+.setup-form select,
+.setup-form textarea {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-glass);
+  color: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.setup-form textarea {
+  height: 200px;
+  font-family: 'JetBrains Mono', 'Menlo', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.setup-form input[type="text"]:focus,
+.setup-form select:focus,
+.setup-form textarea:focus {
+  outline: none;
+  background: rgba(0, 0, 0, 0.6);
+  border-color: var(--theme-color);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--theme-color) 20%, transparent);
+}
+
+.custom-color-control {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.color-picker-input-wrap {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  /* Squircle */
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+.color-picker-input-wrap:hover {
+  transform: scale(1.1) translateY(-2px);
+}
+
+.color-picker-input-wrap input[type="color"] {
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  width: 90px;
+  height: 90px;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  opacity: 0;
+}
+
+.hex-input {
+  flex-grow: 1;
+  text-transform: uppercase;
+  font-family: 'JetBrains Mono', 'SF Mono', monospace !important;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+.btn-primary {
+  background: #fff;
+  color: #000;
+  border: none;
+  border-radius: 12px;
+  padding: 18px 32px;
+  font-family: 'Clash Display', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  margin-top: 16px;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  animation: staggerFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2);
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
 }
